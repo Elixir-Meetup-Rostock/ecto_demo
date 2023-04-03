@@ -1,4 +1,8 @@
 # EctoDemo
+This is mostly a barebones Phoenix project to demonstrate basic Ecto functionality. There is a livebook in livebook/ecto_schulung.livemd that provides a rough guideline for an initial ecto teaching session. To view, install livebook separately from [livebook.dev](https://livebook.dev).
+
+
+## Basic Phoenix Readme
 
 To start your Phoenix server:
 
