@@ -1,0 +1,154 @@
+# Ecto Demo
+
+## Schema
+
+```elixir
+defmodule Weather do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  # weather is the DB table
+  schema "weather" do
+    field(:city, :string)
+    field(:temp_lo, :integer)
+    field(:temp_hi, :integer)
+    field(:prcp, :float, default: 0.0)
+
+    timestamps()
+  end
+
+  def changeset(weather, attrs \\ %{}) do
+    weather
+    |> cast(attrs, [:city, :temp_lo, :temp_hi, :prcp])
+    |> validate_required([:city, :temp_lo, :temp_hi])
+    |> validate_inclusion(:temp_hi, 10..55)
+  end
+end
+```
+
+```elixir
+weather = %Weather{temp_lo: 30}
+weather.temp_lo
+```
+
+```elixir
+alias EctoDemo.Repo
+```
+
+## Migration
+
+```mix ecto.gen.migration create_weather_table```
+
+<!-- livebook:{"break_markdown":true} -->
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+defmodule EctoDemo.Repo.Migrations.CreateWeatherTable do
+  use Ecto.Migration
+
+  def up do
+    create table("weather") do
+      add :city,    :string, size: 40
+      add :temp_lo, :integer
+      add :temp_hi, :integer
+      add :prcp,    :float
+
+      timestamps()
+    end
+  end
+
+  def down do
+    drop table("weather")
+  end
+end
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+```mix ecto.migrate```
+
+## Repo Interaktion
+
+```elixir
+weather = %Weather{temp_lo: 0, temp_hi: 23}
+Repo.insert!(weather)
+```
+
+```elixir
+weather = Repo.get(Weather, 4)
+```
+
+```elixir
+# Repo.delete!(weather)
+```
+
+## Changesets
+
+```elixir
+changeset = Weather.changeset(%Weather{}, %{city: "Rostock", temp_hi: 5})
+```
+
+```elixir
+changeset = Weather.changeset(%Weather{}, %{city: "Rostock", temp_hi: 34, temp_lo: "-20"})
+```
+
+```elixir
+updated_changeset = Weather.changeset(weather, %{city: "Rostock"})
+```
+
+```elixir
+Ecto.Changeset.apply_changes(changeset)
+```
+
+```elixir
+Ecto.Changeset.apply_changes(updated_changeset)
+```
+
+```elixir
+Repo.update(updated_changeset)
+```
+
+## Query
+
+```elixir
+import Ecto.Query
+
+query = from(w in Weather, where: w.city == "Rostock")
+query |> IO.inspect(label: "the query")
+Repo.all(query)
+```
+
+```elixir
+Weather
+|> where([w], w.city == "Rostock")
+|> IO.inspect(label: "the query")
+|> Repo.all()
+```
+
+## Generators
+
+```elixir
+# mix phx.gen.context Blog Post posts title:string text:string
+# mix phx.gen.context Blog Comment comments title:string text:string post_id:references:posts
+```
+
+```elixir
+alias EctoDemo.Blog.{Post, Comment}
+```
+
+```elixir
+{:ok, post} = EctoDemo.Blog.create_post(%{title: "my first pnoy", text: "lorem ipsum"})
+```
+
+```elixir
+EctoDemo.Blog.create_comment(%{title: "something", text: "first!", post: post})
+```
+
+```elixir
+EctoDemo.Blog.list_posts() |> Repo.preload(:comments)
+```
+
+```elixir
+post
+```
