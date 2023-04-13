@@ -1,5 +1,18 @@
 # Ecto Demo
 
+## Agenda
+
+* Schema
+* Repo
+* Changeset
+* Query
+* Generators
+
+## Ressourcen
+
+* [Ecto Documentation](https://hexdocs.pm/ecto/Ecto.html)
+* [Phoenix framework cheatsheet](https://lib.marinovic.dev/phoenix)
+
 ## Schema
 
 ```elixir
@@ -32,7 +45,7 @@ weather.temp_lo
 ```
 
 ```elixir
-alias EctoDemo.Repo
+weather
 ```
 
 ## Migration
@@ -71,12 +84,20 @@ end
 ## Repo Interaktion
 
 ```elixir
+alias EctoDemo.Repo
+```
+
+```elixir
 weather = %Weather{temp_lo: 0, temp_hi: 23}
 Repo.insert!(weather)
 ```
 
 ```elixir
-weather = Repo.get(Weather, 4)
+Repo.insert(weather)
+```
+
+```elixir
+weather = Repo.get(Weather, 2)
 ```
 
 ```elixir
@@ -86,7 +107,7 @@ weather = Repo.get(Weather, 4)
 ## Changesets
 
 ```elixir
-changeset = Weather.changeset(%Weather{}, %{city: "Rostock", temp_hi: 5})
+changeset = Weather.changeset(%Weather{}, %{city: "Rostock", temp_hi: 5, unfung: 14})
 ```
 
 ```elixir
@@ -120,9 +141,13 @@ Repo.all(query)
 ```
 
 ```elixir
+Repo.one!(query)
+```
+
+```elixir
 Weather
 |> where([w], w.city == "Rostock")
-|> IO.inspect(label: "the query")
+|> where([w], w.temp_lo < 5)
 |> Repo.all()
 ```
 
